@@ -9,7 +9,6 @@ public class Interpreter {
 	
 	public static void main(String[] args){
 		checkCommandLineArgs(args);
-		console();
 	}
 	
 	private static void checkCommandLineArgs(String[] args){
@@ -64,6 +63,7 @@ public class Interpreter {
 				System.err.println("Could not find class: " + classname);
 				System.exit(-6);
 			}
+			console();
 		}
 	}
 	
@@ -112,7 +112,7 @@ public class Interpreter {
 				}
 			}
 			else if (c == '(')
-				functionHandler(line.substring(1, (line.length()-1)));
+				functionHandler(line);
 			else{
 				valueHandler(line);
 			}
