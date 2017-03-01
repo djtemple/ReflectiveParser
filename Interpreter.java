@@ -1,11 +1,13 @@
 package parser;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.*;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Scanner;
-import java.util.jar.JarFile;
+import java.net.URLClassLoader;
+import java.net.URL;
 
 public class Interpreter {
 	static boolean verbose;
@@ -58,8 +60,12 @@ public class Interpreter {
 		}
 		else {
 			try {
-				initJarFile();
-				subject = Class.forName(classname);
+				File f = new File(jarname);
+				URL fURL = f.toURI().toURL();
+				URL[] jfURL = {new URL("jar", "", fURL + "!/")};
+				URLClassLoader loader = new URLClassLoader(jfURL);
+				subject = Class.forName(classname, true, loader);
+				loader.close();
 				console();
 			} catch (ClassNotFoundException e) {
 				System.err.println("Could not find class: " + classname);
@@ -214,10 +220,6 @@ public class Interpreter {
 				System.out.println(") : " + rType);
 			
 		}
-	}
-	private static void initJarFile() throws IOException{
-		JarFile j = new JarFile(jarname);
-		j.close();
 	}
 	private static void help(){
 		System.out.println("q           : Quit the program.");
