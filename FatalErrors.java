@@ -3,13 +3,18 @@ package parser;
 public class FatalErrors {
 	
 	public static void unrecognizedQualifier(String input){
-		System.err.println("Unrecognized qualifier " + input);
+		System.err.println("Unrecognized qualifier '" + input + "'");
 		Interpreter.synopsis();
 		System.exit(-1);
 	}
 
 	public static void unrecognizedLongQualifier(String input){
-		System.err.println("Unrecognized qualifier '" + input.charAt(1) + "' in '" + input + "'");
+		char c;
+		if ((input.charAt(1) == 'h') || (input.charAt(1) == 'v') || (input.charAt(1) == '?'))
+			c = input.charAt(2);
+		else
+			c = input.charAt(1);
+		System.err.println("Unrecognized qualifier '" + c + "' in '" + input + "'");
 		Interpreter.synopsis();
 		System.exit(-1);
 	}
@@ -31,3 +36,4 @@ public class FatalErrors {
 		System.exit(3);
 	}
 }
+
