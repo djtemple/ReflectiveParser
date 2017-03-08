@@ -17,6 +17,8 @@ public class Interpreter {
 	static Class<?> subject;
 	static String[] allowables = {"int", "float", "java.lang.String", "java.lang.Float", "java.lang.Integer"};
 	
+	static FunctionHandler funHandler = new FunctionHandler();
+	
 	public static void main(String[] args){
 		checkCommandLineArgs(args);
 	}
@@ -177,7 +179,11 @@ public class Interpreter {
 	}
 	
 	private static void functionHandler(String input){
-		System.out.println("Handling " + input + "...");
+		try{
+		funHandler.interpretExpression(input);
+		}catch(ParseException e){
+			//do something
+		}
 	}
 
 	private static void listFunctions(Class<?> c){
