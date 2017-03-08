@@ -182,7 +182,7 @@ public class Interpreter {
 		try{
 		funHandler.interpretExpression(input);
 		}catch(ParseException e){
-			//do something
+			System.out.println(e);
 		}
 	}
 

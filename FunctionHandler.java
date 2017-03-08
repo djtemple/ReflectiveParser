@@ -26,23 +26,83 @@ public class FunctionHandler {
 	}
 	
 	/*
-	 * Function called to interpret the string into separate tokens
+	 * Function called to take the string and put it into a parse tree
+	 * 
+	 *  First, it splits the string into tokens of type string
+	 *  consisting of brackets, numbers, and words
+	 * 
+	 * ex. (add 1 (mul 100 5)) would become...
+	 * "(", "add", "1", "(", "mul", "10", "5", ")", ")"
 	 */
 	public void interpretExpression(String function) throws ParseException{
 		
 		TreeMap<String, String> tm = new TreeMap();
 		
-		String tkn;
+		LinkedList<String> stringList = new LinkedList<String>();
+		String temp; 
 		
-		// split the string into its individual parts to begin parsing
+		// split the string into its individual strings to begin parsing
 		char[] functionStringArray = function.toCharArray();
-	
-		// iterate through the entire array
-		for(int i = 0; i < functionStringArray.length; i++){
-			
-		}	
-	}
 
+		int i = 0; 
+		while(i < functionStringArray.length){
+			
+			temp = ""; // reset string first
+			
+			// if its a bracket ( or )...
+			if(functionStringArray[i] == '(' || functionStringArray[i] == ')'){
+				stringList.add(Character.toString(functionStringArray[i]));
+				i++; // increment
+			}
+			// if its a digit 0 - 9...
+			else if(Character.isDigit(functionStringArray[i])){
+			
+				// read the whole digit in
+				while(Character.isDigit(functionStringArray[i])){
+					temp += functionStringArray[i]; // start building the string 
+					i++;
+					/* TODO handle decimals here
+					if(functionStringArray[i] == '.'){
+						
+					}
+					*/
+				}
+				stringList.add(temp);
+			}
+			// if its in the alphabet...
+			else if(Character.isAlphabetic(functionStringArray[i])){
+				
+				// read the whole word in
+				while(Character.isAlphabetic(functionStringArray[i])){
+					temp += functionStringArray[i]; // start constructing the token
+					i++;
+				}
+				stringList.add(temp);
+			}
+			// if its a space...
+			else if(functionStringArray[i] == ' '){
+				// do nothing...we don't want no spaces!
+				i++;
+			}
+			else{
+				System.out.println("Encountered Illegal character at: " + i);
+				throw new ParseException("Encountered illegal character at: ", i);
+		
+			}
+		}
+		System.out.println("Split the expression into tokens: " + stringList); 
+		//... TODO: 
+		
+	}
+	
+	/*
+	 * Function called to interpret the string into separate tokens
+	 * which are represented as strings 
+	 * 
+	 * ex. (add 1 (mul 100 5)) would become...
+	 * "(", "add", "1", "(", "mul", "10", "5", ")", ")"
+	 */
+	
 	private boolean ifToken(String tkn){
 	
 		if(tokens.contains(tkn)){
