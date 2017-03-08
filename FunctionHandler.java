@@ -20,7 +20,7 @@ public class FunctionHandler {
 	 * Basic constructor
 	 * Handles setting all of the possible tokens
 	 */
-	public FunctionHandler(){
+	public FunctionHandler(Class<?> subject){
 		this.tokens = new LinkedList<String>();
 		
 	}
@@ -77,7 +77,11 @@ public class FunctionHandler {
 					temp += functionStringArray[i]; // start constructing the token
 					i++;
 				}
-				stringList.add(temp);
+				// check if its a valid expression
+				if(isToken(temp))
+					stringList.add(temp);
+				else
+					throw new ParseException("Invalid expression command at: ", i);
 			}
 			// if its a space...
 			else if(functionStringArray[i] == ' '){
@@ -85,30 +89,25 @@ public class FunctionHandler {
 				i++;
 			}
 			else{
-				System.out.println("Encountered Illegal character at: " + i);
-				throw new ParseException("Encountered illegal character at: ", i);
-		
+				throw new ParseException("Encountered illegal character", i);
 			}
 		}
 		System.out.println("Split the expression into tokens: " + stringList); 
-		//... TODO: 
+		//TODO: put it into a tree now...
+		
+		
 		
 	}
 	
 	/*
-	 * Function called to interpret the string into separate tokens
-	 * which are represented as strings 
-	 * 
-	 * ex. (add 1 (mul 100 5)) would become...
-	 * "(", "add", "1", "(", "mul", "10", "5", ")", ")"
+	 * Function called to check if a string is a valid token
 	 */
-	
-	private boolean ifToken(String tkn){
+	private boolean isToken(String tkn){
 	
 		if(tokens.contains(tkn)){
 			return true;
 		}
-		return false;
+		return true;
 	}
 	
 	

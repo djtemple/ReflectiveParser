@@ -17,10 +17,11 @@ public class Interpreter {
 	static Class<?> subject;
 	static String[] allowables = {"int", "float", "java.lang.String", "java.lang.Float", "java.lang.Integer"};
 	
-	static FunctionHandler funHandler = new FunctionHandler();
+	static FunctionHandler funHandler; // handle all the fun!
 	
 	public static void main(String[] args){
 		checkCommandLineArgs(args);
+		
 	}
 	private static void checkCommandLineArgs(String[] args){
 		boolean h = false;
@@ -67,6 +68,7 @@ public class Interpreter {
 				URL[] jfURL = {new URL("jar", "", fURL + "!/")};
 				URLClassLoader loader = new URLClassLoader(jfURL);
 				subject = Class.forName(classname, true, loader);
+				funHandler = new FunctionHandler(subject);
 				loader.close();
 				console();
 			} catch (ClassNotFoundException e) {
