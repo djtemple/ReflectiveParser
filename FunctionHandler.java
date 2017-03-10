@@ -1,8 +1,24 @@
 package parser;
 
+import java.lang.reflect.*;
 import java.text.ParseException;
 import java.util.LinkedList;
 import java.util.TreeMap;
+
+class Node{
+	
+	String value;
+	Node left, right;
+	
+	Node(String s){
+		value = s;
+		left = right = null;
+	}
+	
+}
+
+
+
 /*
  *	Class built in to take in the functions and evaluate
  *	via a TreeMap
@@ -22,7 +38,11 @@ public class FunctionHandler {
 	 */
 	public FunctionHandler(Class<?> subject){
 		this.tokens = new LinkedList<String>();
+		Method[] methods = subject.getMethods();
 		
+		for(int i = 0; i < methods.length; i++){
+			tokens.add(methods[i].getName().toString()); // retrieve every method name
+		}
 	}
 	
 	/*
@@ -55,33 +75,12 @@ public class FunctionHandler {
 				i++; // increment
 			}
 			// if its a digit 0 - 9...
-			else if(Character.isDigit(functionStringArray[i])){
-			
-				// read the whole digit in
-				while(Character.isDigit(functionStringArray[i])){
+			else if(Character.isDigit(functionStringArray[i]) || Character.isAlphabetic(functionStringArray[i])){
+				while(Character.isDigit(functionStringArray[i]) || Character.isAlphabetic(functionStringArray[i])){
 					temp += functionStringArray[i]; // start building the string 
 					i++;
-					/* TODO handle decimals here
-					if(functionStringArray[i] == '.'){
-						
-					}
-					*/
 				}
 				stringList.add(temp);
-			}
-			// if its in the alphabet...
-			else if(Character.isAlphabetic(functionStringArray[i])){
-				
-				// read the whole word in
-				while(Character.isAlphabetic(functionStringArray[i])){
-					temp += functionStringArray[i]; // start constructing the token
-					i++;
-				}
-				// check if its a valid expression
-				if(isToken(temp))
-					stringList.add(temp);
-				else
-					throw new ParseException("Invalid expression command at: ", i);
 			}
 			// if its a space...
 			else if(functionStringArray[i] == ' '){
@@ -92,11 +91,15 @@ public class FunctionHandler {
 				throw new ParseException("Encountered illegal character", i);
 			}
 		}
-		System.out.println("Split the expression into tokens: " + stringList); 
+		System.out.println("Split the expression: " + stringList); 
 		//TODO: put it into a tree now...
 		
+		Node root = new Node("");	// instantiate the root node
 		
-		
+		for(int j = 0;j < stringList.size(); j++){
+			
+			
+		}
 	}
 	
 	/*
@@ -107,7 +110,7 @@ public class FunctionHandler {
 		if(tokens.contains(tkn)){
 			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	
