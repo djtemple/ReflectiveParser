@@ -13,8 +13,7 @@ class Node{
 	Node(String s){
 		value = s;
 		left = right = null;
-	}
-	
+	}	
 }
 
 
@@ -56,7 +55,7 @@ public class FunctionHandler {
 	 */
 	public void interpretExpression(String function) throws ParseException{
 		
-		TreeMap<String, String> tm = new TreeMap();
+	
 		
 		LinkedList<String> stringList = new LinkedList<String>();
 		String temp; 
@@ -75,12 +74,60 @@ public class FunctionHandler {
 				i++; // increment
 			}
 			// if its a digit 0 - 9...
-			else if(Character.isDigit(functionStringArray[i]) || Character.isAlphabetic(functionStringArray[i])){
-				while(Character.isDigit(functionStringArray[i]) || Character.isAlphabetic(functionStringArray[i])){
-					temp += functionStringArray[i]; // start building the string 
-					i++;
+			else if(Character.isDigit(functionStringArray[i])){
+				while(true){
+					temp += functionStringArray[i++]; // start building the string 
+
+					// if its supposed to be a float
+					if(functionStringArray[i] == '.'){
+						temp += functionStringArray[i++];
+						
+						if(!Character.isDigit(functionStringArray[i]))
+							throw new ParseException("Invalid float: ", i);
+						
+						while(true){
+							temp += functionStringArray[i];
+							i++;
+							if(functionStringArray[i] == ' ' || functionStringArray[i] == ')')
+								break;
+							else if(!Character.isDigit(functionStringArray[i]))
+								throw new ParseException("Invalid float: ", i);
+						}
+					}
+					if(functionStringArray[i] == ' ' || functionStringArray[i] == ')')
+						break;
 				}
 				stringList.add(temp);
+			}
+			// if its a string 
+			else if(functionStringArray[i] == '"'){
+				temp += functionStringArray[i]; // start building the string 
+				i++;
+				while(true){
+					temp += functionStringArray[i]; // start building the string 
+					i++;
+					if(functionStringArray[i] == '"'){
+						temp += functionStringArray[i];
+						i++;
+						if(functionStringArray[i] != ' ' && functionStringArray[i] != ')')
+							throw new ParseException("Error parsing: ", i);
+						else
+							break;
+					}
+				}
+				stringList.add(temp);
+			}
+			// if its an identifier
+			else if(Character.isAlphabetic(functionStringArray[i])){
+				while(true){
+					temp += functionStringArray[i++]; // start building the string 
+					if(functionStringArray[i] == ' ')
+						break;
+				}
+				if(isToken(temp))
+					stringList.add(temp);
+				else
+					throw new ParseException("Parse Exception - Identifier error: ", i);
 			}
 			// if its a space...
 			else if(functionStringArray[i] == ' '){
@@ -88,18 +135,34 @@ public class FunctionHandler {
 				i++;
 			}
 			else{
-				throw new ParseException("Encountered illegal character", i);
+				throw new ParseException("Parse Exception - Encountered illegal input", i);
 			}
 		}
 		System.out.println("Split the expression: " + stringList); 
 		//TODO: put it into a tree now...
 		
 		Node root = new Node("");	// instantiate the root node
+		/*
+		for(int j = 0; j < stringList.size(); j++){
 		
-		for(int j = 0;j < stringList.size(); j++){
+			// if its a bracket, go down and left a node
+			if(stringList.get(j) == "("){
+
+				
+				
+				
+			}else if(isToken(stringList.get(j))){
+					
+					
+					
+			}else
+				throw new ParseException("Error parsing: ", j);
+		
+			
 			
 			
 		}
+		*/
 	}
 	
 	/*
