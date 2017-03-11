@@ -3,20 +3,6 @@ package parser;
 import java.lang.reflect.*;
 import java.text.ParseException;
 import java.util.LinkedList;
-import java.util.TreeMap;
-
-class Node{
-	
-	String value;
-	Node left, right;
-	
-	Node(String s){
-		value = s;
-		left = right = null;
-	}	
-}
-
-
 
 /*
  *	Class built in to take in the functions and evaluate
@@ -27,6 +13,8 @@ class Node{
  * 
  */
 public class FunctionHandler {
+	
+	TreeMaker tm = new TreeMaker();
 
 	// linked list to contain all the possible tokens
 	private LinkedList<String> tokens;
@@ -49,14 +37,14 @@ public class FunctionHandler {
 	 * 
 	 *  First, it splits the string into tokens of type string
 	 *  consisting of brackets, numbers, and words
+	 *  
+	 *  it does error checking
 	 * 
 	 * ex. (add 1 (mul 100 5)) would become...
 	 * "(", "add", "1", "(", "mul", "10", "5", ")", ")"
 	 */
 	public void interpretExpression(String function) throws ParseException{
-		
-	
-		
+			
 		LinkedList<String> stringList = new LinkedList<String>();
 		String temp; 
 		
@@ -66,8 +54,7 @@ public class FunctionHandler {
 		int i = 0; 
 		while(i < functionStringArray.length){
 			
-			temp = ""; // reset string first
-			
+			temp = "";
 			// if its a bracket ( or )...
 			if(functionStringArray[i] == '(' || functionStringArray[i] == ')'){
 				stringList.add(Character.toString(functionStringArray[i]));
@@ -76,15 +63,12 @@ public class FunctionHandler {
 			// if its a digit 0 - 9...
 			else if(Character.isDigit(functionStringArray[i])){
 				while(true){
-					temp += functionStringArray[i++]; // start building the string 
-
-					// if its supposed to be a float
-					if(functionStringArray[i] == '.'){
+					temp += functionStringArray[i++]; 
+			
+					if(functionStringArray[i] == '.'){	// if its supposed to be a float
 						temp += functionStringArray[i++];
-						
 						if(!Character.isDigit(functionStringArray[i]))
 							throw new ParseException("Invalid float: ", i);
-						
 						while(true){
 							temp += functionStringArray[i];
 							i++;
@@ -101,8 +85,8 @@ public class FunctionHandler {
 			}
 			// if its a string 
 			else if(functionStringArray[i] == '"'){
-				temp += functionStringArray[i]; // start building the string 
-				i++;
+				temp += functionStringArray[i++]; // start building the string 
+				
 				while(true){
 					temp += functionStringArray[i]; // start building the string 
 					i++;
@@ -131,7 +115,6 @@ public class FunctionHandler {
 			}
 			// if its a space...
 			else if(functionStringArray[i] == ' '){
-				// do nothing...we don't want no spaces!
 				i++;
 			}
 			else{
@@ -139,30 +122,10 @@ public class FunctionHandler {
 			}
 		}
 		System.out.println("Split the expression: " + stringList); 
-		//TODO: put it into a tree now...
 		
-		Node root = new Node("");	// instantiate the root node
-		/*
-		for(int j = 0; j < stringList.size(); j++){
+		// make the tree NOW
+		tm.makeTree(stringList);
 		
-			// if its a bracket, go down and left a node
-			if(stringList.get(j) == "("){
-
-				
-				
-				
-			}else if(isToken(stringList.get(j))){
-					
-					
-					
-			}else
-				throw new ParseException("Error parsing: ", j);
-		
-			
-			
-			
-		}
-		*/
 	}
 	
 	/*
