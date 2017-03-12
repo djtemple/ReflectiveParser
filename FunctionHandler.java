@@ -3,7 +3,18 @@ package parser;
 import java.lang.reflect.*;
 import java.text.ParseException;
 import java.util.LinkedList;
+import java.util.Stack;
 
+class Node{
+	
+	String value;
+	Node left, right;
+	
+	Node(String s){
+		value = s;
+		left = right = null;
+	}
+}
 /*
  *	Class built in to take in the functions and evaluate
  *	via a TreeMap
@@ -14,7 +25,7 @@ import java.util.LinkedList;
  */
 public class FunctionHandler {
 	
-	TreeMaker tm = new TreeMaker();
+	
 
 	// linked list to contain all the possible tokens
 	private LinkedList<String> tokens;
@@ -124,7 +135,10 @@ public class FunctionHandler {
 		System.out.println("Split the expression: " + stringList); 
 		
 		// make the tree NOW
-		tm.makeTree(stringList);
+		preorder(createTree(stringList));
+		
+		
+		System.out.println(" ");
 		
 	}
 	
@@ -140,11 +154,75 @@ public class FunctionHandler {
 	}
 	
 	
+	void preorder(Node t) {
+        if (t != null) {
+        	System.out.print(t.value + " ");
+        	preorder(t.left);
+        	preorder(t.right);
+        }
+    }
 	
+	boolean oneParameter(String Function) {
+		if (Function.equals("len") || Function.equals("inc") || Function.equals("dec")) {
+			return true;
+		}
+		else
+			return false;
+	}
 	
+	boolean zeroParameter(String Function) {
+		if (Function.equals("rand")) {
+			return true;
+		}
+		else
+			return false;
+	}
 	
-	
-	
-	
+	private Node createTree(LinkedList<String> parsedList) {
+		System.out.println(parsedList);
+		Stack<Node> stack = new Stack<Node>();
+		Node t, t1, t2, t3;
+		
+		for (int i = 0; i < parsedList.size(); i++) {
+					
+			if(parsedList.get(i).equals(")")) {
+					t1 = stack.pop();
+					Node peek = stack.peek();
+					String peekString = peek.value; 
+					
+					if (oneParameter(peekString)) {
+						t2 = stack.pop();
+						stack.pop();	
+						
+						t2.left = t1;
+						stack.push(t2);	
+					}
+//					else if (zeroParameter(peekString)) {
+//						stack.pop();
+//						stack.push(t1);
+//					}
 
+					else {
+						t2 = stack.pop();
+						t3 = stack.pop();
+						stack.pop();			
+	
+						t3.left = t2;
+						t3.right = t1;
+			
+						stack.push(t3);	
+					}
+			}
+			else {
+				t = new Node(parsedList.get(i));
+				stack.push(t);
+			}
+		}
+		
+		t = stack.peek();
+		stack.pop();
+		
+		return t;
+		
+	}
 }
