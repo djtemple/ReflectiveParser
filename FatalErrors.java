@@ -2,13 +2,13 @@ package parser;
 
 public class FatalErrors {
 	
-	public static void unrecognizedQualifier(String input){
+	public static void unrecognizedLongQualifier(String input){
 		System.err.println("Unrecognized qualifier '" + input + "'");
 		Interpreter.synopsis();
 		System.exit(-1);
 	}
 
-	public static void unrecognizedLongQualifier(String input){
+	public static void unrecognizedQualifier(String input){
 		char c;
 		if ((input.charAt(1) == 'h') || (input.charAt(1) == 'v') || (input.charAt(1) == '?'))
 			c = input.charAt(2);
