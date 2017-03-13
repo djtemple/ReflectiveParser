@@ -64,6 +64,8 @@ public class Interpreter {
 		else {
 			try {
 				File f = new File(jarname);
+				if (!f.exists())
+					throw new IOException();
 				URL fURL = f.toURI().toURL();
 				URL[] jfURL = {new URL("jar", "", fURL + "!/")};
 				URLClassLoader loader = new URLClassLoader(jfURL);
@@ -141,7 +143,7 @@ public class Interpreter {
 		System.out.println(message);
 	}
 	
-	private static void valueHandler(String input){
+		private static void valueHandler(String input){
 		try {
 			if (input.charAt(0) == '"'){
 				int close = input.indexOf('"', 1);
@@ -154,7 +156,10 @@ public class Interpreter {
 			}
 			else {
 				int point = 0;
-				for (int i = 0; i < input.length(); i++){
+				int j = 0;
+				if (input.charAt(j) == '+' || input.charAt(j) == '-')
+					j++;
+				for (int i = j; i < input.length(); i++){
 					if (Character.isDigit(input.charAt(i)))
 						continue;
 					else if (input.charAt(i) == '.')
@@ -166,8 +171,10 @@ public class Interpreter {
 					int offset = input.indexOf('.', (input.indexOf('.')+1));
 					throw new ParseException("Unexpected character encountered at offset " + offset, offset);
 				}
+				else if (point == 1)
+					System.out.println(Float.parseFloat(input));
 				else
-					System.out.println(input);
+					System.out.println(Integer.parseInt(input));
 			}
 		} catch (ParseException e) {
 			System.out.println(e.getMessage());
@@ -177,6 +184,12 @@ public class Interpreter {
 			System.out.println("^");
 			if (verbose)
 				e.printStackTrace(); 
+		} catch (NumberFormatException e2) {
+			System.out.println("Integer out of range");
+			System.out.println(input);
+			System.out.println("^");
+			if (verbose)
+				e2.printStackTrace();
 		}
 	}
 	
