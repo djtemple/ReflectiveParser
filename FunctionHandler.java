@@ -311,7 +311,7 @@ private String treeEvaluate(Node t) {
 												try {
 													intVal = (int) (methods[methodNum].invoke(null, t.left.intVal ,t.right.intVal));
 													} catch (IllegalAccessException | IllegalArgumentException
-									| InvocationTargetException e) {
+															| InvocationTargetException e) {
 														// TODO Auto-generated catch block
 														e.printStackTrace();
 														}
@@ -353,7 +353,22 @@ private String treeEvaluate(Node t) {
 						System.out.println("hey");
 					}
 					else {
-						t.value = "hey";
+						for (int i = 0; i < tokens.size(); i++) {
+							if (t.value.equals(methods[i].getName()) && methods[i].getParameterCount() ==0) {
+								methodNum = i;
+								try {
+									intVal = (int) methods[methodNum].invoke(null);
+									} catch (IllegalAccessException | IllegalArgumentException
+										| InvocationTargetException e) {
+									// TODO Auto-generated catch block
+										e.printStackTrace();
+									}
+								t.intVal = intVal;
+								t.type = "int";
+								t.method = false;
+								t.value = Integer.toString(intVal);
+							}
+						}
 					}
 				}
 			}
@@ -412,7 +427,7 @@ public Node createTree(LinkedList<String> parsedList) {
 			}
 
 		}
-		
+
 		else {
 			t = new Node(parsedList.get(i));
 			stack.push(t);
