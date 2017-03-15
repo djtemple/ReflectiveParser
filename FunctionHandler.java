@@ -2,6 +2,7 @@ package parser;
 
 import java.lang.reflect.*;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Stack;
 
@@ -29,6 +30,7 @@ public class FunctionHandler {
 
 	// linked list to contain all the possible tokens
 	private LinkedList<String> tokens;
+	private Method[] methods;
 	
 	/*
 	 * Basic constructor
@@ -36,7 +38,7 @@ public class FunctionHandler {
 	 */
 	public FunctionHandler(Class<?> subject){
 		this.tokens = new LinkedList<String>();
-		Method[] methods = subject.getMethods();
+		methods = subject.getMethods();
 		
 		for(int i = 0; i < methods.length; i++){
 			tokens.add(methods[i].getName().toString()); // retrieve every method name
@@ -57,66 +59,55 @@ public class FunctionHandler {
 	public void interpretExpression(String function) throws ParseException{
 			
 		LinkedList<String> stringList = new LinkedList<String>();
-		String temp; 
-		
-		// split the string into its individual strings to begin parsing
-		char[] functionStringArray = function.toCharArray();
+		char[] str = function.toCharArray();
+		String temp = "";
+		int i = 0;
+		/*
+		while(i < str.length){
 
-		int i = 0; 
-		while(i < functionStringArray.length){
-			
 			temp = "";
-			// if its a bracket ( or )...
-			if(functionStringArray[i] == '(' || functionStringArray[i] == ')'){
-				stringList.add(Character.toString(functionStringArray[i]));
-				i++; // increment
-			}
-			// if its a digit 0 - 9...
-			else if(Character.isDigit(functionStringArray[i])){
-				while(true){
-					temp += functionStringArray[i++]; 
 			
-					if(functionStringArray[i] == '.'){	// if its supposed to be a float
-						temp += functionStringArray[i++];
-						if(!Character.isDigit(functionStringArray[i]))
+			if(str[i] == '(' || str[i] == ')'){
+				stringList.add(Character.toString(str[i++]));
+			}
+			else if(Character.isDigit(str[i])){
+				while(true){
+					temp += str[i++];
+
+					if(str[i] == '.'){	// if its supposed to be a float
+						temp += str[i++];
+						if(!Character.isDigit(str[i]))
 							throw new ParseException("Invalid float: ", i);
 						while(true){
-							temp += functionStringArray[i];
+							temp += str[i];
 							i++;
-							if(functionStringArray[i] == ' ' || functionStringArray[i] == ')')
+							if(str[i] == ' ' || str[i] == ')')
 								break;
-							else if(!Character.isDigit(functionStringArray[i]))
+							else if(!Character.isDigit(str[i]))
 								throw new ParseException("Invalid float: ", i);
 						}
 					}
-					if(functionStringArray[i] == ' ' || functionStringArray[i] == ')')
+					if(str[i] == ' ' || str[i] == ')')
 						break;
 				}
 				stringList.add(temp);
 			}
-			// if its a string 
-			else if(functionStringArray[i] == '"'){
-				temp += functionStringArray[i++]; // start building the string 
-				
+			else if(str[i] == '"'){
 				while(true){
-					temp += functionStringArray[i]; // start building the string 
-					i++;
-					if(functionStringArray[i] == '"'){
-						temp += functionStringArray[i];
-						i++;
-						if(functionStringArray[i] != ' ' && functionStringArray[i] != ')')
-							throw new ParseException("Error parsing: ", i);
-						else
-							break;
+					temp += str[i++]; // start building the string 
+					if(str[i] == '"'){
+						temp += str[i++];
+						break;
 					}
+					if(i >= str.length)
+						throw new ParseException("Invalid string: ", i);
 				}
 				stringList.add(temp);
 			}
-			// if its an identifier
-			else if(Character.isAlphabetic(functionStringArray[i])){
+			else if(Character.isAlphabetic(str[i])){
 				while(true){
-					temp += functionStringArray[i++]; // start building the string 
-					if(functionStringArray[i] == ' ')
+					temp += str[i++]; // start building the string
+					if(str[i] == ' ')
 						break;
 				}
 				if(isToken(temp))
@@ -124,23 +115,125 @@ public class FunctionHandler {
 				else
 					throw new ParseException("Parse Exception - Identifier error: ", i);
 			}
-			// if its a space...
-			else if(functionStringArray[i] == ' '){
+			else if(str[i] == ' '){
 				i++;
 			}
 			else{
 				throw new ParseException("Parse Exception - Encountered illegal input", i);
 			}
 		}
-		System.out.println("Split the expression: " + stringList); 
 		
-		// make the tree NOW
-		preorder(createTree(stringList));
+		System.out.println("Split the expression: " + stringList);
+		*/
+		System.out.println("Split the expression: " + checkMethods(function.toCharArray(), 0));
 		
-		
+
 		System.out.println(" ");
 		
 	}
+	
+	private LinkedList<String> checkMethods(char[] str, int i) throws ParseException{
+		
+		LinkedList<String> list = new LinkedList<String>(); 
+		String temp = "";
+		
+		if(str[i] == '('){
+			// add the first opening bracket
+			list.add(Character.toString(str[i++]));
+			
+			// read in the identifier
+			while(true){
+				temp += str[i++];
+				if(i >= (str.length)){
+					throw new ParseException("Invalid identifier: ", i);
+				}else if(str[i] == ' '){ // read until a space is encountered
+					if(!isToken(temp)) // check if its a proper method name
+						throw new ParseException("Invalid identifier: ", i);
+					list.add(temp);	
+					temp = "";
+					i++;	// skip over the space
+					break;	
+				}else if(str[i] == ')'){
+					if(!isToken(temp)) // check if its a proper method name
+						throw new ParseException("Invalid identifier: ", i);
+					list.add(temp);	
+					list.add(Character.toString(str[i++]));
+					return list;
+				}
+			}
+			
+			
+			// continue to read all the arguments
+			while(true){
+				temp = "";
+				// if its a space, ignore it
+				if(str[i] == ' ')
+					i++;
+				else if(Character.isDigit(str[i])){
+					while(true){
+						temp += str[i++];
+
+						if(str[i] == '.'){	// if its supposed to be a float
+							temp += str[i++];
+							if(!Character.isDigit(str[i]))
+								throw new ParseException("Invalid float: ", i);
+							while(true){
+								temp += str[i];
+								i++;
+								if(str[i] == ' ' || str[i] == ')')
+									break;
+								else if(!Character.isDigit(str[i]))
+									throw new ParseException("Invalid float: ", i);
+							}
+						}
+						if(str[i] == ' ' || str[i] == ')')
+							break;
+					}
+					list.add(temp);
+				}else if(str[i] == '"'){
+					while(true){
+						temp += str[i++]; // start building the string 
+						if(str[i] == '"'){
+							temp += str[i++];
+							break;
+						}
+						if(i >= str.length)
+							throw new ParseException("Invalid string: ", i);
+					}
+					list.add(temp);
+				}else if(str[i] == '('){
+					list.addAll(checkMethods(str, i)); // recursive call
+					int j = 1;
+					i++;
+					while(j > 0 && i < str.length){
+						
+						if(str[i] == '(')
+							j++;
+						else if(str[i] == ')')
+							j--;
+						
+						i++;
+					}
+					
+
+				}else if(str[i] == ')'){ // ')' signifies all arguments have been read
+					list.add(Character.toString(str[i++]));
+					return list;
+				}else{
+					throw new ParseException("Incorrect input: ", i);
+				}
+				
+				if(i >= str.length)
+					break;
+			}
+			
+		}else
+			throw new ParseException("Bracket error: ", i); // first character MUST be a bracket
+		return list;
+	}
+	
+	
+	
 	
 	/*
 	 * Function called to check if a string is a valid token
