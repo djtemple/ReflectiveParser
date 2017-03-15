@@ -6,22 +6,32 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Stack;
 
+class Node{
+	
+	String value;
+	Node left, right;
+	
+	Node(String s){
+		value = s;
+		left = right = null;
+	}
+}
 /*
  *	Class built in to take in the functions and evaluate
  *	via a TreeMap
- *
- *
- *
- *
+ * 
+ * 
+ * 
+ * 
  */
 public class FunctionHandler {
-
-
+	
+	
 
 	// linked list to contain all the possible tokens
 	private LinkedList<String> tokens;
 	private Method[] methods;
-
+	
 	/*
 	 * Basic constructor
 	 * Handles setting all of the possible tokens
@@ -29,25 +39,25 @@ public class FunctionHandler {
 	public FunctionHandler(Class<?> subject){
 		this.tokens = new LinkedList<String>();
 		methods = subject.getMethods();
-
+		
 		for(int i = 0; i < methods.length; i++){
 			tokens.add(methods[i].getName().toString()); // retrieve every method name
 		}
 	}
-
+	
 	/*
 	 * Function called to take the string and put it into a parse tree
-	 *
+	 * 
 	 *  First, it splits the string into tokens of type string
 	 *  consisting of brackets, numbers, and words
-	 *
+	 *  
 	 *  it does error checking
-	 *
+	 * 
 	 * ex. (add 1 (mul 100 5)) would become...
 	 * "(", "add", "1", "(", "mul", "10", "5", ")", ")"
 	 */
 	public void interpretExpression(String function) throws ParseException{
-
+			
 		LinkedList<String> stringList = new LinkedList<String>();
 		char[] str = function.toCharArray();
 		String temp = "";
@@ -56,7 +66,7 @@ public class FunctionHandler {
 		while(i < str.length){
 
 			temp = "";
-
+			
 			if(str[i] == '(' || str[i] == ')'){
 				stringList.add(Character.toString(str[i++]));
 			}
@@ -84,7 +94,7 @@ public class FunctionHandler {
 			}
 			else if(str[i] == '"'){
 				while(true){
-					temp += str[i++]; // start building the string
+					temp += str[i++]; // start building the string 
 					if(str[i] == '"'){
 						temp += str[i++];
 						break;
@@ -112,29 +122,25 @@ public class FunctionHandler {
 				throw new ParseException("Parse Exception - Encountered illegal input", i);
 			}
 		}
-
+		
 		System.out.println("Split the expression: " + stringList);
 		*/
 		System.out.println("Split the expression: " + checkMethods(function.toCharArray(), 0));
-
-
-//		System.out.println("This " + function);
-
-		System.out.println(treeEvaluate(createTree(checkMethods(function.toCharArray(), 0))));
+		
 
 		System.out.println(" ");
-
+		
 	}
-
+	
 	private LinkedList<String> checkMethods(char[] str, int i) throws ParseException{
-
-		LinkedList<String> list = new LinkedList<String>();
+		
+		LinkedList<String> list = new LinkedList<String>(); 
 		String temp = "";
-
+		
 		if(str[i] == '('){
 			// add the first opening bracket
 			list.add(Character.toString(str[i++]));
-
+			
 			// read in the identifier
 			while(true){
 				temp += str[i++];
@@ -143,20 +149,20 @@ public class FunctionHandler {
 				}else if(str[i] == ' '){ // read until a space is encountered
 					if(!isToken(temp)) // check if its a proper method name
 						throw new ParseException("Invalid identifier: ", i);
-					list.add(temp);
+					list.add(temp);	
 					temp = "";
 					i++;	// skip over the space
-					break;
+					break;	
 				}else if(str[i] == ')'){
 					if(!isToken(temp)) // check if its a proper method name
 						throw new ParseException("Invalid identifier: ", i);
-					list.add(temp);
+					list.add(temp);	
 					list.add(Character.toString(str[i++]));
 					return list;
 				}
 			}
-
-
+			
+			
 			// continue to read all the arguments
 			while(true){
 				temp = "";
@@ -186,7 +192,7 @@ public class FunctionHandler {
 					list.add(temp);
 				}else if(str[i] == '"'){
 					while(true){
-						temp += str[i++]; // start building the string
+						temp += str[i++]; // start building the string 
 						if(str[i] == '"'){
 							temp += str[i++];
 							break;
@@ -200,15 +206,15 @@ public class FunctionHandler {
 					int j = 1;
 					i++;
 					while(j > 0 && i < str.length){
-
+						
 						if(str[i] == '(')
 							j++;
 						else if(str[i] == ')')
 							j--;
-
+						
 						i++;
 					}
-
+					
 
 				}else if(str[i] == ')'){ // ')' signifies all arguments have been read
 					list.add(Character.toString(str[i++]));
@@ -216,216 +222,100 @@ public class FunctionHandler {
 				}else{
 					throw new ParseException("Incorrect input: ", i);
 				}
-
+				
 				if(i >= str.length)
 					break;
 			}
-
+			
 		}else
 			throw new ParseException("Bracket error: ", i); // first character MUST be a bracket
 		return list;
 	}
-
+	
+	
+	
+	
 	/*
 	 * Function called to check if a string is a valid token
 	 */
 	private boolean isToken(String tkn){
-
+	
 		if(tokens.contains(tkn)){
 			return true;
 		}
 		return false;
 	}
-
-	public class Node{
-	Node left, right;
-	String value;
-	Boolean method;
-	Integer numOfParam;
-	String type;
-	Float floatVal;
-	int intVal;
-	int i = 0;
-
-	void NodeInt(String s) {
-		intVal = Integer.parseInt(s);
-
+	
+	
+	void preorder(Node t) {
+        if (t != null) {
+        	System.out.print(t.value + " ");
+        	preorder(t.left);
+        	preorder(t.right);
+        }
+    }
+	
+	boolean oneParameter(String Function) {
+		if (Function.equals("len") || Function.equals("inc") || Function.equals("dec")) {
+			return true;
+		}
+		else
+			return false;
 	}
-	void NodeFloat(String s){
-		floatVal = java.lang.Float.valueOf(s);
-
+	
+	boolean zeroParameter(String Function) {
+		if (Function.equals("rand")) {
+			return true;
+		}
+		else
+			return false;
 	}
-
-	Node (String s){
-		value = s;
-		char[] valueArray = s.toCharArray();
-		left = right = null;
-
-				if (tokens.contains(value)) {
-					method = true;
-				} else {
-					method = false;
-				}
-				if (!method) {
-//        		System.out.println("heyRAWR");
-
-					while(i < valueArray.length){
-						if(Character.isAlphabetic(valueArray[i])) {
-							type = "string";
-							break;
-						}
-						else if (s.contains(".")) {
-							type = "float";
-							NodeFloat(s);
-							break;
-						}
-						else if (!s.equals("(")){
-							type = "int";
-							NodeInt(s);
-						}
-						i++;
+	
+	private Node createTree(LinkedList<String> parsedList) {
+		System.out.println(parsedList);
+		Stack<Node> stack = new Stack<Node>();
+		Node t, t1, t2, t3;
+		
+		for (int i = 0; i < parsedList.size(); i++) {
+					
+			if(parsedList.get(i).equals(")")) {
+					t1 = stack.pop();
+					Node peek = stack.peek();
+					String peekString = peek.value; 
+					
+					if (oneParameter(peekString)) {
+						t2 = stack.pop();
+						stack.pop();	
+						
+						t2.left = t1;
+						stack.push(t2);	
 					}
-				}
-	}
-}
+//					else if (zeroParameter(peekString)) {
+//						stack.pop();
+//						stack.push(t1);
+//					}
 
-private String treeEvaluate(Node t) {
-
-	int intVal = 0;
-	float floatVal = 0;
-	int methodNum = 0;
-
-			if (t != null) {
-
-				if (t.left != null || t.right != null) {
-					treeEvaluate(t.left);
-					treeEvaluate(t.right);
-				}
-
-				if (t.method) {
-					if (t.numOfParam == 2 && (t.left.type == t.right.type)) {
-									if (t.left.type.equals("int")) {
-										for (int i = 0; i < tokens.size(); i++) {
-											if (methods[i].getReturnType().equals(int.class)&& t.value.equals(methods[i].getName())) {
-												methodNum = i;
-												try {
-													intVal = (int) (methods[methodNum].invoke(null, t.left.intVal ,t.right.intVal));
-													} catch (IllegalAccessException | IllegalArgumentException
-									| InvocationTargetException e) {
-														// TODO Auto-generated catch block
-														e.printStackTrace();
-														}
-												t.intVal = intVal;
-												t.type = "int";
-												t.method = false;
-												t.value = Integer.toString(intVal);
-											}
-										}
-									}
-
-									else if (t.left.type.equals("float")) {
-										for (int i = 0; i < tokens.size(); i++) {
-											if (methods[i].getReturnType().equals(float.class)&& t.value.equals(methods[i].getName())) {
-												methodNum = i;
-												try {
-													floatVal = (float) (methods[methodNum].invoke(null, t.left.floatVal ,t.right.floatVal));
-													} catch (IllegalAccessException | IllegalArgumentException
-														| InvocationTargetException e) {
-													// TODO Auto-generated catch block
-														e.printStackTrace();
-													}
-												t.floatVal = floatVal;
-												t.type = "float";
-												t.method = false;
-												t.value = java.lang.String.valueOf(floatVal);
-											}
-										}
-									}
-
-						else {
-							System.out.println("Unmatching types");
-						}
-					}
-					else if (t.numOfParam == 1) {
-						t.value = t.left.value;
-						t.type = "int";
-						t.method = false;
-						System.out.println("hey");
-					}
 					else {
-						t.value = "hey";
+						t2 = stack.pop();
+						t3 = stack.pop();
+						stack.pop();			
+	
+						t3.left = t2;
+						t3.right = t1;
+			
+						stack.push(t3);	
 					}
-				}
 			}
-			return t.value;
-	}
-
-public Node createTree(LinkedList<String> parsedList) {
-	System.out.println(parsedList);
-	Stack<Node> stack = new Stack<Node>();
-	Stack<Node> stackTemp = new Stack<Node>();
-	Node t, t1, t2, t3;
-	int numOfParameters = -1;
-
-	for (int i = 0; i < parsedList.size(); i++) {
-
-		if(parsedList.get(i).equals(")")) {
-
-			while(!(stack.peek().value).equals("(")) {
-				stackTemp.push(stack.pop());
-				numOfParameters++;
-			}
-
-			while(!stackTemp.isEmpty()) {
-				stack.push(stackTemp.pop());
-			}
-
-			if (numOfParameters == 2) {
-				t1 = stack.pop();
-				t2 = stack.pop();
-				t3 = stack.pop();
-				stack.pop();
-
-				t3.left = t2;
-				t3.right = t1;
-
-				t3.numOfParam = numOfParameters;
-				stack.push(t3);
-
-			}
-			else if (numOfParameters == 1) {
-				t1 = stack.pop();
-				t2 = stack.pop();
-				stack.pop();
-
-				t2.left = t1;
-				t2.numOfParam = numOfParameters;
-				stack.push(t2);
-			}
-
 			else {
-				t1 = stack.pop();
-				stack.pop();
-
-				t1.numOfParam = numOfParameters;
-				stack.push(t1);
+				t = new Node(parsedList.get(i));
+				stack.push(t);
 			}
-
 		}
-
-		else {
-			t = new Node(parsedList.get(i));
-			stack.push(t);
-		}
-
-		numOfParameters = -1;
+		
+		t = stack.peek();
+		stack.pop();
+		
+		return t;
+		
 	}
-
-	t = stack.peek();
-	stack.pop();
-
-	return t;
-
-}
-
 }
