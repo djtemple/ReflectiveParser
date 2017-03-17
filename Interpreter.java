@@ -16,16 +16,20 @@ public class Interpreter {
 	static String classname = "Commands";
 	static Class<?> subject;
 	static String[] allowables = {"int", "float", "java.lang.String", "java.lang.Float", "java.lang.Integer"};
-	
-	static FunctionHandler funHandler; // handle all the fun!
+	static FunctionHandler funHandler;
 	
 	public static void main(String[] args){
 		checkCommandLineArgs(args);
-		
 	}
+	/**
+	 * Checks command-line arguments, sets initial verbose flag, loads class and jarfile, and starts the interactive console
+	 * handles fatal errors for illegal command-line arguments and invalid jar/class names
+	 * @param args
+	 */
 	private static void checkCommandLineArgs(String[] args){
 		boolean h = false;
 		int i;
+		//loop to get starting qualifiers
 		for (i = 0; i < args.length; i++){
 			if (args[i].charAt(0) == '-'){
 				if (args[i].equals("-v") || args[i].equals("--verbose"))
@@ -42,6 +46,7 @@ public class Interpreter {
 			else
 				break;
 		}
+		//loop to get following command-line arguments
 		for (int j = 0; i < args.length; i++, j++){
 			if (args[i].charAt(0) == '-')
 				FatalErrors.invalidArgOrder();
@@ -62,6 +67,7 @@ public class Interpreter {
 			System.out.println("methods in <class-name>, and executes them, printing the result to sysout.");
 		}
 		else {
+			//load class from jar file
 			try {
 				File f = new File(jarname);
 				if (!f.exists())
@@ -83,7 +89,9 @@ public class Interpreter {
 		}
 		
 	}
-	
+	/**
+	 * prints out program synopsis to console
+	 */
 	static void synopsis(){
 		System.out.println("Synopsis:");
 		System.out.println("  methods");
@@ -97,7 +105,9 @@ public class Interpreter {
 		System.out.println("  -h -? --help: Print out a detailed help message.");
 		System.out.println("Single-char qualifiers may be grouped; long qualifiers may be truncated to unique prefixes and are not case sensitive.");
 	}
-	
+	/**
+	 * handles input from the user and returns appropriate response
+	 */
 	private static void console(){
 		Scanner s = new Scanner(System.in);
 		help();
@@ -120,7 +130,7 @@ public class Interpreter {
 					toggleVerbose();
 					break;
 				case 'f':
-					listFunctions(subject);
+					listFunctions();
 					break;	
 				default: 
 					valueHandler(line);
@@ -136,14 +146,21 @@ public class Interpreter {
 		s.close();
 		System.out.println("Bye");
 	}
-	
+	/**
+	 * turns verbose on and off
+	 */
 	private static void toggleVerbose(){
 		verbose = !verbose;
 		String message = verbose ? "Verbose on" : "Verbose off";
 		System.out.println(message);
 	}
-	
-		private static void valueHandler(String input){
+	/**
+	 * checks if input from the command line is a valid value (String, int, or float)
+	 * if valid, the input is interpreted and returned to the console
+	 * otherwise, a parse error is thrown
+	 * @param input - string input from the command line
+	 */
+	private static void valueHandler(String input){
 		try {
 			if (input.charAt(0) == '"'){
 				int close = input.indexOf('"', 1);
@@ -200,11 +217,15 @@ public class Interpreter {
 			System.out.println(e);
 		}
 	}
-
-	private static void listFunctions(Class<?> c){
+	/**
+	 * fetches methods from the loaded class
+	 * displays methods to the console, disregarding any methods containing parameter 
+	 * or return types other than int (Integer), float (Float), and String
+	 */
+	private static void listFunctions(){
 		String name;
 		String rType;
-		Method[] methods = c.getMethods();
+		Method[] methods = subject.getMethods();
 		boolean ignore;
 		for (int i = 0; i < methods.length; i++){
 			ignore = false;
@@ -242,6 +263,9 @@ public class Interpreter {
 			
 		}
 	}
+	/**
+	 * prints a basic help message to the console
+	 */
 	private static void help(){
 		System.out.println("q           : Quit the program.");
 		System.out.println("v           : Toggle verbose mode (stack traces).");
