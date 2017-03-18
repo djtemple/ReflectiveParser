@@ -50,75 +50,9 @@ public class FunctionHandler {
 
 		LinkedList<String> stringList = new LinkedList<String>();
 		char[] str = function.toCharArray();
-		String temp = "";
-		int i = 0;
-		/*
-		while(i < str.length){
-
-			temp = "";
-
-			if(str[i] == '(' || str[i] == ')'){
-				stringList.add(Character.toString(str[i++]));
-			}
-			else if(Character.isDigit(str[i])){
-				while(true){
-					temp += str[i++];
-
-					if(str[i] == '.'){	// if its supposed to be a float
-						temp += str[i++];
-						if(!Character.isDigit(str[i]))
-							throw new ParseException("Invalid float: ", i);
-						while(true){
-							temp += str[i];
-							i++;
-							if(str[i] == ' ' || str[i] == ')')
-								break;
-							else if(!Character.isDigit(str[i]))
-								throw new ParseException("Invalid float: ", i);
-						}
-					}
-					if(str[i] == ' ' || str[i] == ')')
-						break;
-				}
-				stringList.add(temp);
-			}
-			else if(str[i] == '"'){
-				while(true){
-					temp += str[i++]; // start building the string
-					if(str[i] == '"'){
-						temp += str[i++];
-						break;
-					}
-					if(i >= str.length)
-						throw new ParseException("Invalid string: ", i);
-				}
-				stringList.add(temp);
-			}
-			else if(Character.isAlphabetic(str[i])){
-				while(true){
-					temp += str[i++]; // start building the string
-					if(str[i] == ' ')
-						break;
-				}
-				if(isToken(temp))
-					stringList.add(temp);
-				else
-					throw new ParseException("Parse Exception - Identifier error: ", i);
-			}
-			else if(str[i] == ' '){
-				i++;
-			}
-			else{
-				throw new ParseException("Parse Exception - Encountered illegal input", i);
-			}
-		}
-
-		System.out.println("Split the expression: " + stringList);
-		*/
+		
 		System.out.println("Split the expression: " + checkMethods(function.toCharArray(), 0));
 
-
-//		System.out.println("This " + function);
 
 		System.out.println(treeEvaluate(createTree(checkMethods(function.toCharArray(), 0))));
 
