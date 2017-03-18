@@ -50,7 +50,7 @@ public class FunctionHandler {
 
 		LinkedList<String> stringList = new LinkedList<String>();
 		char[] str = function.toCharArray();
-		
+
 		System.out.println("Split the expression: " + checkMethods(function.toCharArray(), 0));
 
 
@@ -160,6 +160,9 @@ public class FunctionHandler {
 		return list;
 	}
 
+
+
+
 	/*
 	 * Function called to check if a string is a valid token
 	 */
@@ -180,6 +183,7 @@ public class FunctionHandler {
 	Float floatVal;
 	int intVal;
 	int i = 0;
+	public Object stringVal;
 
 	void NodeInt(String s) {
 		intVal = Integer.parseInt(s);
@@ -192,6 +196,7 @@ public class FunctionHandler {
 
 	Node (String s){
 		value = s;
+		String stringVal = "";
 		char[] valueArray = s.toCharArray();
 		left = right = null;
 
@@ -204,7 +209,7 @@ public class FunctionHandler {
 //        		System.out.println("heyRAWR");
 
 					while(i < valueArray.length){
-						if(Character.isAlphabetic(valueArray[i])) {
+						if(value.startsWith("\"")) {
 							type = "string";
 							break;
 						}
@@ -227,60 +232,91 @@ private String treeEvaluate(Node t) {
 
 	int intVal = 0;
 	float floatVal = 0;
+	String stringVal;
 	int methodNum = 0;
 
 			if (t != null) {
 
-				if (t.left != null || t.right != null) {
+				if (t.left != null && t.right != null) {
 					treeEvaluate(t.left);
 					treeEvaluate(t.right);
 				}
 
 				if (t.method) {
 					if (t.numOfParam == 2 && (t.left.type == t.right.type)) {
-									if (t.left.type.equals("int")) {
-										for (int i = 0; i < tokens.size(); i++) {
-											if (methods[i].getReturnType().equals(int.class)&& t.value.equals(methods[i].getName())) {
-												methodNum = i;
-												try {
-													intVal = (int) (methods[methodNum].invoke(null, t.left.intVal ,t.right.intVal));
-													} catch (IllegalAccessException | IllegalArgumentException
-															| InvocationTargetException e) {
-														// TODO Auto-generated catch block
-														e.printStackTrace();
-														}
-												t.intVal = intVal;
-												t.type = "int";
-												t.method = false;
-												t.value = Integer.toString(intVal);
-											}
+						if (t.left.type.equals("int")) {
+							for (int i = 0; i < tokens.size(); i++) {
+								if (methods[i].getReturnType().equals(int.class)&& t.value.equals(methods[i].getName())) {
+									methodNum = i;
+									try {
+										intVal = (int) (methods[methodNum].invoke(null, t.left.intVal ,t.right.intVal));
 										}
+										catch (IllegalAccessException | IllegalArgumentException
+												| InvocationTargetException e) {
+												e.printStackTrace();
+												}
+										t.intVal = intVal;
+										t.type = "int";
+										t.method = false;
+										t.value = Integer.toString(intVal);
 									}
-
-									else if (t.left.type.equals("float")) {
-										for (int i = 0; i < tokens.size(); i++) {
-											if (methods[i].getReturnType().equals(float.class)&& t.value.equals(methods[i].getName())) {
-												methodNum = i;
-												try {
-													floatVal = (float) (methods[methodNum].invoke(null, t.left.floatVal ,t.right.floatVal));
-													} catch (IllegalAccessException | IllegalArgumentException
-														| InvocationTargetException e) {
-													// TODO Auto-generated catch block
-														e.printStackTrace();
-													}
-												t.floatVal = floatVal;
-												t.type = "float";
-												t.method = false;
-												t.value = java.lang.String.valueOf(floatVal);
-											}
+								}
+							}
+						else if (t.left.type.equals("float")) {
+							for (int i = 0; i < tokens.size(); i++) {
+								if (methods[i].getReturnType().equals(float.class)&& t.value.equals(methods[i].getName())) {
+									methodNum = i;
+									try {
+										floatVal = (float) (methods[methodNum].invoke(null, t.left.floatVal ,t.right.floatVal));
 										}
+										catch (IllegalAccessException | IllegalArgumentException
+											| InvocationTargetException e) {
+										e.printStackTrace();
+										}
+										t.floatVal = floatVal;
+										t.type = "float";
+										t.method = false;
+										t.value = java.lang.String.valueOf(floatVal);
 									}
-
-						else {
-							System.out.println("Unmatching types");
+								}
+							}
+						else if (t.left.type.equals("string")) {
+							for (int i = 0; i < tokens.size(); i++) {
+								if (methods[i].getReturnType().equals(String.class)&& t.value.equals(methods[i].getName())) {
+									methodNum = i;
+									System.out.println(methods[i].getName());
+//									try {
+//										intVal = (int) (methods[methodNum].invoke(null, t.left.stringVal ,t.right.stringVal));
+//										}
+//										catch (IllegalAccessException | IllegalArgumentException
+//											| InvocationTargetException e) {
+//										e.printStackTrace();
+//										}
+									t.intVal = intVal;
+									t.type = "int";
+									t.method = false;
+									t.value = Integer.toString(intVal);
+									}
+								}
 						}
 					}
+					else if (t.numOfParam ==2 && (t.left.type != t.right.type)) {
+						return ("Matching function for '(" + t.value + " " + t.left.type + " " + t.right.type + ")' not found at offset 10");
+					}
 					else if (t.numOfParam == 1) {
+						for (int i = 0; i < tokens.size(); i++) {
+							if (methods[i].getParameterCount() == 0) {
+							System.out.println(methods[i].getName() + " " + methods[i].getReturnType() + " " + i);
+						}
+						}
+
+//						try {
+//							System.out.println(methods[4].invoke(null, (float) 2.3));
+//						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+//							// TODO Auto-generated catch block
+//							e.printStackTrace();
+//						}
+//
 						t.value = t.left.value;
 						t.type = "int";
 						t.method = false;
@@ -290,6 +326,7 @@ private String treeEvaluate(Node t) {
 						for (int i = 0; i < tokens.size(); i++) {
 							if (t.value.equals(methods[i].getName()) && methods[i].getParameterCount() ==0) {
 								methodNum = i;
+								if (t.value.equals("rand")) {
 								try {
 									intVal = (int) methods[methodNum].invoke(null);
 									} catch (IllegalAccessException | IllegalArgumentException
@@ -301,10 +338,27 @@ private String treeEvaluate(Node t) {
 								t.type = "int";
 								t.method = false;
 								t.value = Integer.toString(intVal);
+								}
+								else if (t.value.equals("randFloat")) {
+									try {
+										floatVal = (float) methods[methodNum].invoke(null);
+										} catch (IllegalAccessException | IllegalArgumentException
+											| InvocationTargetException e) {
+										// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
+									t.floatVal = floatVal;
+									t.type = "float";
+									t.method = false;
+									t.value = String.valueOf(floatVal);
+								}
+
+								}
 							}
 						}
 					}
-				}
+
+
 			}
 			return t.value;
 	}
