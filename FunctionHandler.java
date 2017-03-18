@@ -183,7 +183,7 @@ public class FunctionHandler {
 	String type;
 	Float floatVal;
 	String stringVal;
-	int intVal;
+	Integer intVal;
 	int i = 0;
 
 	void NodeInt(String s) {
@@ -230,7 +230,7 @@ public class FunctionHandler {
 
 private String treeEvaluate(Node t) {
 
-	int intVal = 0;
+	Integer intVal = 0;
 	float floatVal = 0;
 	String stringVal = " ";
 	int methodNum = 0;
@@ -243,9 +243,7 @@ private String treeEvaluate(Node t) {
 				}
 
 				if (t.method) {
-					for (int j = 0; j < tokens.size(); j++) {
-					System.out.println(methods[j].getName() + " " + methods[j].getReturnType());
-					}
+
 					if (t.numOfParam == 2 && (t.left.type == t.right.type)) {
 						if (t.left.type.equals("int")) {
 							for (int i = 0; i < tokens.size(); i++) {
@@ -262,6 +260,7 @@ private String treeEvaluate(Node t) {
 										t.type = "int";
 										t.method = false;
 										t.value = Integer.toString(intVal);
+										break;
 									}
 								}
 							}
@@ -287,14 +286,17 @@ private String treeEvaluate(Node t) {
 							for (int i = 0; i < tokens.size(); i++) {
 								if (methods[i].getReturnType().equals(String.class)&& t.value.equals(methods[i].getName())) {
 									methodNum = i;
-									System.out.println(methods[i].getName());
 									try {
-										System.out.println((methods[methodNum].invoke(null, t.left.stringVal ,t.right.stringVal)));
+										stringVal = (String) (methods[methodNum].invoke(null, t.left.stringVal ,t.right.stringVal));
 										}
 										catch (IllegalAccessException | IllegalArgumentException
 											| InvocationTargetException e) {
 										e.printStackTrace();
 										}
+										t.stringVal = stringVal;
+										t.type = "string";
+										t.method = false;
+										t.value = stringVal;
 									}
 								}
 						}
@@ -302,16 +304,67 @@ private String treeEvaluate(Node t) {
 					else if (t.numOfParam ==2 && (t.left.type != t.right.type)) {
 						return ("Matching function for '(" + t.value + " " + t.left.type + " " + t.right.type + ")' not found at offset 10");
 					}
-					else if (t.numOfParam == 1) {
-						for (int i = 0; i < tokens.size(); i++) {
-							if (methods[i].getParameterCount() == 0) {
-							System.out.println(methods[i].getName() + " " + methods[i].getReturnType() + " " + i);
+
+					if (t.numOfParam == 1) {
+
+						if (t.left.type.equals("int")) {
+							for (int i = 0; i < tokens.size(); i++) {
+								if (t.value.equals(methods[i].getName()) && (t.left.intVal.getClass() == (methods[i].getReturnType()))) {
+									methodNum = i;
+									try {
+										intVal = (int) (methods[methodNum].invoke(null, t.left.intVal));
+										}
+										catch (IllegalAccessException | IllegalArgumentException
+												| InvocationTargetException e) {
+												e.printStackTrace();
+												}
+										t.intVal = intVal;
+										t.type = "int";
+										t.method = false;
+										t.value = Integer.toString(intVal);
+									}
+								}
+							}
+
+						else if (t.left.type.equals("float")) {
+							for (int i = 0; i < tokens.size(); i++) {
+								if (t.value.equals(methods[i].getName()) && (t.left.floatVal.getClass() == (methods[i].getReturnType()))) {
+									methodNum = i;
+									try {
+										floatVal = (float) (methods[methodNum].invoke(null, t.left.floatVal));
+										}
+										catch (IllegalAccessException | IllegalArgumentException
+											| InvocationTargetException e) {
+										e.printStackTrace();
+										}
+										t.floatVal = floatVal;
+										t.type = "float";
+										t.method = false;
+										t.value = java.lang.String.valueOf(floatVal);
+									}
+								}
+							}
+
+						else if (t.left.type.equals("string")) {
+							for (int i = 0; i < tokens.size(); i++) {
+								if (methods[i].getReturnType().equals(int.class)&& t.value.equals(methods[i].getName())) {
+									methodNum = i;
+									try {
+										intVal = (Integer) (methods[methodNum].invoke(null, t.left.stringVal));
+										}
+										catch (IllegalAccessException | IllegalArgumentException
+											| InvocationTargetException e) {
+										e.printStackTrace();
+										}
+									t.intVal = intVal;
+									t.type = "int";
+									t.method = false;
+									t.value = Integer.toString(intVal);
+									}
+								}
 						}
-						}
-						t.value = t.left.value;
-						t.type = "int";
-						t.method = false;
-						System.out.println("hey");
+
+
 					}
 					else {
 						for (int i = 0; i < tokens.size(); i++) {
