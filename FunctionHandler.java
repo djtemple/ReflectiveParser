@@ -302,16 +302,17 @@ private String treeEvaluate(Node t) {
 						}
 					}
 					else if (t.numOfParam ==2 && (t.left.type != t.right.type)) {
-						return ("Matching function for '(" + t.value + " " + t.left.type + " " + t.right.type + ")' not found at offset 10");
+						return ("Matching function for '(" + t.value + " " + t.left.type + " " + t.right.type + ")' not found");
 					}
 
 					if (t.numOfParam == 1) {
 
 						if (t.left.type.equals("int")) {
+
 							for (int i = 0; i < tokens.size(); i++) {
 								if (t.value.equals(methods[i].getName()) && (t.left.intVal.getClass() == (methods[i].getReturnType()))) {
 									methodNum = i;
-									System.out.println("rand");
+
 									try {
 										intVal = (int) (methods[methodNum].invoke(null, t.left.intVal));
 										}
@@ -396,6 +397,19 @@ private String treeEvaluate(Node t) {
 									t.type = "float";
 									t.method = false;
 									t.value = String.valueOf(floatVal);
+								}
+								else if (t.value.equals("javaVersion")) {
+									try {
+										stringVal = (String) (methods[methodNum].invoke(null));
+										}
+										catch (IllegalAccessException | IllegalArgumentException
+											| InvocationTargetException e) {
+										e.printStackTrace();
+										}
+										t.stringVal = stringVal;
+										t.type = "string";
+										t.method = false;
+										t.value = stringVal;
 								}
 
 								}
