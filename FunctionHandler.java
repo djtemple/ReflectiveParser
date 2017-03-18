@@ -311,6 +311,7 @@ private String treeEvaluate(Node t) {
 							for (int i = 0; i < tokens.size(); i++) {
 								if (t.value.equals(methods[i].getName()) && (t.left.intVal.getClass() == (methods[i].getReturnType()))) {
 									methodNum = i;
+									System.out.println("rand");
 									try {
 										intVal = (int) (methods[methodNum].invoke(null, t.left.intVal));
 										}
