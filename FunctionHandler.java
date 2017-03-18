@@ -51,8 +51,6 @@ public class FunctionHandler {
 		LinkedList<String> stringList = new LinkedList<String>();
 		char[] str = function.toCharArray();
 
-		System.out.println("Split the expression: " + checkMethods(function.toCharArray(), 0));
-
 
 		System.out.println(treeEvaluate(createTree(checkMethods(function.toCharArray(), 0))));
 
@@ -241,6 +239,13 @@ private String treeEvaluate(Node t) {
 					treeEvaluate(t.left);
 					treeEvaluate(t.right);
 				}
+				 else if (t.left !=null && t.right == null){
+
+	                    treeEvaluate(t.left);
+
+	                }
+
+
 
 				if (t.method) {
 
@@ -260,7 +265,6 @@ private String treeEvaluate(Node t) {
 										t.type = "int";
 										t.method = false;
 										t.value = Integer.toString(intVal);
-										break;
 									}
 								}
 							}
@@ -423,7 +427,6 @@ private String treeEvaluate(Node t) {
 	}
 
 public Node createTree(LinkedList<String> parsedList) {
-	System.out.println(parsedList);
 	Stack<Node> stack = new Stack<Node>();
 	Stack<Node> stackTemp = new Stack<Node>();
 	Node t, t1, t2, t3;
