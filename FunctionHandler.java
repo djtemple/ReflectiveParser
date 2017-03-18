@@ -119,10 +119,11 @@ public class FunctionHandler {
 					}
 					list.add(temp);
 				}else if(str[i] == '"'){
+					i++;
 					while(true){
 						temp += str[i++]; // start building the string
 						if(str[i] == '"'){
-							temp += str[i++];
+							i++;
 							break;
 						}
 						if(i >= str.length)
@@ -181,9 +182,9 @@ public class FunctionHandler {
 	Integer numOfParam;
 	String type;
 	Float floatVal;
+	String stringVal;
 	int intVal;
 	int i = 0;
-	public Object stringVal;
 
 	void NodeInt(String s) {
 		intVal = Integer.parseInt(s);
@@ -196,7 +197,6 @@ public class FunctionHandler {
 
 	Node (String s){
 		value = s;
-		String stringVal = "";
 		char[] valueArray = s.toCharArray();
 		left = right = null;
 
@@ -206,11 +206,11 @@ public class FunctionHandler {
 					method = false;
 				}
 				if (!method) {
-//        		System.out.println("heyRAWR");
 
 					while(i < valueArray.length){
-						if(value.startsWith("\"")) {
+						if(Character.isAlphabetic(valueArray[i])) {
 							type = "string";
+							stringVal = s;
 							break;
 						}
 						else if (s.contains(".")) {
@@ -232,7 +232,7 @@ private String treeEvaluate(Node t) {
 
 	int intVal = 0;
 	float floatVal = 0;
-	String stringVal;
+	String stringVal = " ";
 	int methodNum = 0;
 
 			if (t != null) {
@@ -243,6 +243,9 @@ private String treeEvaluate(Node t) {
 				}
 
 				if (t.method) {
+					for (int j = 0; j < tokens.size(); j++) {
+					System.out.println(methods[j].getName() + " " + methods[j].getReturnType());
+					}
 					if (t.numOfParam == 2 && (t.left.type == t.right.type)) {
 						if (t.left.type.equals("int")) {
 							for (int i = 0; i < tokens.size(); i++) {
@@ -285,17 +288,13 @@ private String treeEvaluate(Node t) {
 								if (methods[i].getReturnType().equals(String.class)&& t.value.equals(methods[i].getName())) {
 									methodNum = i;
 									System.out.println(methods[i].getName());
-//									try {
-//										intVal = (int) (methods[methodNum].invoke(null, t.left.stringVal ,t.right.stringVal));
-//										}
-//										catch (IllegalAccessException | IllegalArgumentException
-//											| InvocationTargetException e) {
-//										e.printStackTrace();
-//										}
-									t.intVal = intVal;
-									t.type = "int";
-									t.method = false;
-									t.value = Integer.toString(intVal);
+									try {
+										System.out.println((methods[methodNum].invoke(null, t.left.stringVal ,t.right.stringVal)));
+										}
+										catch (IllegalAccessException | IllegalArgumentException
+											| InvocationTargetException e) {
+										e.printStackTrace();
+										}
 									}
 								}
 						}
@@ -309,14 +308,6 @@ private String treeEvaluate(Node t) {
 							System.out.println(methods[i].getName() + " " + methods[i].getReturnType() + " " + i);
 						}
 						}
-
-//						try {
-//							System.out.println(methods[4].invoke(null, (float) 2.3));
-//						} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-//							// TODO Auto-generated catch block
-//							e.printStackTrace();
-//						}
-//
 						t.value = t.left.value;
 						t.type = "int";
 						t.method = false;
